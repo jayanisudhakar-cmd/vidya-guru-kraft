@@ -86,11 +86,17 @@ All colors MUST be HSL.
 
 @layer utilities {
   .text-gradient-primary {
-    @apply bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent;
+    background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--primary-glow)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   
   .text-gradient-accent {
-    @apply bg-gradient-to-r from-accent to-accent-glow bg-clip-text text-transparent;
+    background: linear-gradient(to right, hsl(var(--accent)), hsl(var(--accent-glow)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
   .animate-float {
