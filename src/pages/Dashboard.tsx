@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { useToast } from '@/hooks/use-toast';
 import ChatBot from '@/components/ChatBot';
 import {
   BookOpen,
@@ -13,7 +11,6 @@ import {
   Globe,
   Settings,
   Shield,
-  LogOut,
   TrendingUp,
   Sparkles,
 } from 'lucide-react';
@@ -21,46 +18,7 @@ import {
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
-  const [progress, setProgress] = useState<any[]>([]);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        navigate('/auth');
-        return;
-      }
-      setUser(session.user);
-      
-      // Fetch progress
-      const { data } = await supabase
-        .from('student_progress')
-        .select('*')
-        .eq('user_id', session.user.id);
-      if (data) setProgress(data);
-    };
-
-    checkAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!session?.user) {
-        navigate('/auth');
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Logged out",
-      description: "See you soon!",
-    });
-    navigate('/auth');
-  };
+  const [progress] = useState<any[]>([]);
 
   const subjects = [
     {
@@ -122,10 +80,6 @@ const Dashboard = () => {
             <Button variant="ghost" onClick={() => navigate('/privacy')}>
               <Shield className="w-4 h-4 mr-2" />
               {t('privacy')}
-            </Button>
-            <Button variant="outline" onClick={handleLogout}>
-              <LogOut className="w-4 h-4 mr-2" />
-              {t('logout')}
             </Button>
           </nav>
         </div>

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { GraduationCap, Sparkles, Globe, Brain, BookOpen } from 'lucide-react';
@@ -29,7 +28,7 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Button
               size="lg"
-              onClick={() => navigate('/auth')}
+              onClick={() => navigate('/dashboard')}
               className="text-lg bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 shadow-glow transition-all hover:scale-105"
             >
               Get Started
@@ -37,10 +36,10 @@ const Index = () => {
             <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate('/auth')}
+              onClick={() => navigate('/dashboard')}
               className="text-lg border-primary/50 hover:bg-primary/10"
             >
-              Learn More
+              Explore Subjects
             </Button>
           </div>
 

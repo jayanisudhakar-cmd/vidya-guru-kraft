@@ -1,6 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -9,27 +8,7 @@ import { ArrowLeft, TrendingUp, Award, Target } from 'lucide-react';
 const Progress = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [progress, setProgress] = useState<any[]>([]);
-
-  useEffect(() => {
-    const fetchProgress = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.user) {
-        navigate('/auth');
-        return;
-      }
-
-      const { data } = await supabase
-        .from('student_progress')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false });
-      
-      if (data) setProgress(data);
-    };
-
-    fetchProgress();
-  }, [navigate]);
+  const [progress] = useState<any[]>([]);
 
   const completedTopics = progress.filter(p => p.completed);
   const averageScore = completedTopics.length > 0
