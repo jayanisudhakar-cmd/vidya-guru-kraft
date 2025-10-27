@@ -14,41 +14,147 @@ export type Database = {
   }
   public: {
     Tables: {
+      learning_notes: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          language: string
+          subject: Database["public"]["Enums"]["subject_type"]
+          topic: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          language: string
+          subject: Database["public"]["Enums"]["subject_type"]
+          topic: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          language?: string
+          subject?: Database["public"]["Enums"]["subject_type"]
+          topic?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_notes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string | null
+          current_streak: number | null
           full_name: string | null
           id: string
+          last_activity_date: string | null
+          learning_pace: string | null
           preferred_language: string | null
+          reminder_enabled: boolean | null
+          teacher_avatar_url: string | null
+          teacher_name: string | null
           updated_at: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
+          current_streak?: number | null
           full_name?: string | null
           id: string
+          last_activity_date?: string | null
+          learning_pace?: string | null
           preferred_language?: string | null
+          reminder_enabled?: boolean | null
+          teacher_avatar_url?: string | null
+          teacher_name?: string | null
           updated_at?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string | null
+          current_streak?: number | null
           full_name?: string | null
           id?: string
+          last_activity_date?: string | null
+          learning_pace?: string | null
           preferred_language?: string | null
+          reminder_enabled?: boolean | null
+          teacher_avatar_url?: string | null
+          teacher_name?: string | null
           updated_at?: string | null
         }
         Relationships: []
+      }
+      quiz_results: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          difficulty: Database["public"]["Enums"]["quiz_difficulty"] | null
+          id: string
+          score: number
+          subject: Database["public"]["Enums"]["subject_type"]
+          time_taken_seconds: number | null
+          topic: string
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          difficulty?: Database["public"]["Enums"]["quiz_difficulty"] | null
+          id?: string
+          score: number
+          subject: Database["public"]["Enums"]["subject_type"]
+          time_taken_seconds?: number | null
+          topic: string
+          total_questions: number
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          difficulty?: Database["public"]["Enums"]["quiz_difficulty"] | null
+          id?: string
+          score?: number
+          subject?: Database["public"]["Enums"]["subject_type"]
+          time_taken_seconds?: number | null
+          topic?: string
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_results_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       student_progress: {
         Row: {
           completed: boolean | null
           completed_at: string | null
           created_at: string | null
+          difficulty: Database["public"]["Enums"]["quiz_difficulty"] | null
           id: string
+          notes_generated: boolean | null
           score: number | null
           subject: string
+          time_spent_minutes: number | null
           topic: string
           user_id: string | null
         }
@@ -56,9 +162,12 @@ export type Database = {
           completed?: boolean | null
           completed_at?: string | null
           created_at?: string | null
+          difficulty?: Database["public"]["Enums"]["quiz_difficulty"] | null
           id?: string
+          notes_generated?: boolean | null
           score?: number | null
           subject: string
+          time_spent_minutes?: number | null
           topic: string
           user_id?: string | null
         }
@@ -66,13 +175,57 @@ export type Database = {
           completed?: boolean | null
           completed_at?: string | null
           created_at?: string | null
+          difficulty?: Database["public"]["Enums"]["quiz_difficulty"] | null
           id?: string
+          notes_generated?: boolean | null
           score?: number | null
           subject?: string
+          time_spent_minutes?: number | null
           topic?: string
           user_id?: string | null
         }
         Relationships: []
+      }
+      teacher_customization: {
+        Row: {
+          attire_style: string | null
+          created_at: string | null
+          generated_avatar_url: string | null
+          id: string
+          original_image_url: string | null
+          teacher_name: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attire_style?: string | null
+          created_at?: string | null
+          generated_avatar_url?: string | null
+          id?: string
+          original_image_url?: string | null
+          teacher_name?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attire_style?: string | null
+          created_at?: string | null
+          generated_avatar_url?: string | null
+          id?: string
+          original_image_url?: string | null
+          teacher_name?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "teacher_customization_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
@@ -82,7 +235,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      quiz_difficulty: "easy" | "medium" | "hard"
+      subject_type: "mathematics" | "science" | "history" | "geography"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -209,6 +363,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      quiz_difficulty: ["easy", "medium", "hard"],
+      subject_type: ["mathematics", "science", "history", "geography"],
+    },
   },
 } as const

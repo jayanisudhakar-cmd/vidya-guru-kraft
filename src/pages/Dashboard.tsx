@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import ChatBot from '@/components/ChatBot';
 import {
   BookOpen,
@@ -13,12 +15,52 @@ import {
   Shield,
   TrendingUp,
   Sparkles,
+  LogOut,
+  User,
 } from 'lucide-react';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [progress] = useState<any[]>([]);
+  const [progress, setProgress] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    checkAuth();
+    loadProgress();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate('/auth');
+      return;
+    }
+    setUser(session.user);
+  };
+
+  const loadProgress = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data, error } = await supabase
+        .from('student_progress')
+        .select('*')
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      setProgress(data || []);
+    } catch (error) {
+      console.error('Failed to load progress:', error);
+    }
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    toast.success('Logged out successfully');
+    navigate('/');
+  };
 
   const subjects = [
     {
@@ -66,8 +108,9 @@ const Dashboard = () => {
           </div>
           
           <nav className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate('/dashboard')}>
-              {t('dashboard')}
+            <Button variant="ghost" onClick={() => navigate('/teacher-customization')}>
+              <User className="w-4 h-4 mr-2" />
+              My Teacher
             </Button>
             <Button variant="ghost" onClick={() => navigate('/progress')}>
               <TrendingUp className="w-4 h-4 mr-2" />
@@ -80,6 +123,10 @@ const Dashboard = () => {
             <Button variant="ghost" onClick={() => navigate('/privacy')}>
               <Shield className="w-4 h-4 mr-2" />
               {t('privacy')}
+            </Button>
+            <Button variant="ghost" onClick={handleLogout}>
+              <LogOut className="w-4 h-4 mr-2" />
+              {t('logout')}
             </Button>
           </nav>
         </div>

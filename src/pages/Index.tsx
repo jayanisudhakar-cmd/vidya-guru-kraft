@@ -28,7 +28,7 @@ const Index = () => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
             <Button
               size="lg"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/auth')}
               className="text-lg bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 shadow-glow transition-all hover:scale-105"
             >
               Get Started
@@ -36,7 +36,7 @@ const Index = () => {
             <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate('/dashboard')}
+              onClick={() => navigate('/auth')}
               className="text-lg border-primary/50 hover:bg-primary/10"
             >
               Explore Subjects

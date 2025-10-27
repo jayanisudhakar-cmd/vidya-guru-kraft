@@ -1,14 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { supabase } from '@/integrations/supabase/client';
 import { ArrowLeft, TrendingUp, Award, Target } from 'lucide-react';
 
 const Progress = () => {
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const [progress] = useState<any[]>([]);
+  const [progress, setProgress] = useState<any[]>([]);
+
+  useEffect(() => {
+    loadProgress();
+  }, []);
+
+  const loadProgress = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        navigate('/auth');
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('student_progress')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setProgress(data || []);
+    } catch (error) {
+      console.error('Failed to load progress:', error);
+    }
+  };
 
   const completedTopics = progress.filter(p => p.completed);
   const averageScore = completedTopics.length > 0
